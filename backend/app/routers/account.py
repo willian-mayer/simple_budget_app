@@ -11,7 +11,7 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/accounts", response_model=schemas.Account)
+@router.post("/accounts", response_model=schemas.Account, tags=["Accounts"])
 def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     db_account = models.Account(title=account.title, balance=account.balance)
     db.add(db_account)
@@ -19,11 +19,11 @@ def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)
     db.refresh(db_account)
     return db_account
 
-@router.get("/accounts", response_model=list[schemas.Account])
+@router.get("/accounts", response_model=list[schemas.Account], tags=["Accounts"])
 def list_accounts(db: Session = Depends(get_db)):
     return db.query(models.Account).all()
 
-@router.post("/accounts/{account_id}/transactions", response_model=schemas.Transaction)
+@router.post("/accounts/{account_id}/transactions", response_model=schemas.Transaction, tags=["Transactions"])
 def add_transaction(account_id: UUID, tx: schemas.TransactionCreate, db: Session = Depends(get_db)):
     account = db.query(models.Account).filter(models.Account.id == account_id).first()
     if not account:
@@ -35,14 +35,14 @@ def add_transaction(account_id: UUID, tx: schemas.TransactionCreate, db: Session
     db.refresh(transaction)
     return transaction
 
-@router.get("/accounts/{account_id}", response_model=schemas.Account)
+@router.get("/accounts/{account_id}", response_model=schemas.Account, tags=["Accounts"])
 def get_account(account_id: UUID, db: Session = Depends(get_db)):
     account = db.query(models.Account).filter(models.Account.id == account_id).first()
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
     return account
 
-@router.put("/accounts/{account_id}", response_model=schemas.Account)
+@router.put("/accounts/{account_id}", response_model=schemas.Account, tags=["Accounts"])
 def update_account(account_id: UUID, updated_data: schemas.AccountUpdate, db: Session = Depends(get_db)):
     account = db.query(models.Account).filter(models.Account.id == account_id).first()
     if not account:
@@ -57,7 +57,7 @@ def update_account(account_id: UUID, updated_data: schemas.AccountUpdate, db: Se
     db.refresh(account)
     return account
 
-@router.delete("/accounts/{account_id}")
+@router.delete("/accounts/{account_id}", tags=["Accounts"])
 def delete_account(account_id: UUID, db: Session = Depends(get_db)):
     account = db.query(models.Account).filter(models.Account.id == account_id).first()
     if not account:
@@ -67,7 +67,7 @@ def delete_account(account_id: UUID, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Account deleted successfully"}
 
-@router.put("/accounts/{account_id}/transactions/{transaction_id}", response_model=schemas.Transaction)
+@router.put("/accounts/{account_id}/transactions/{transaction_id}", response_model=schemas.Transaction, tags=["Transactions"])
 def update_transaction(account_id: UUID, transaction_id: UUID, updated_data: schemas.TransactionUpdate, db: Session = Depends(get_db)):
     transaction = db.query(models.Transaction).filter(
         models.Transaction.id == transaction_id,
@@ -88,7 +88,7 @@ def update_transaction(account_id: UUID, transaction_id: UUID, updated_data: sch
     db.refresh(transaction)
     return transaction
 
-@router.delete("/accounts/{account_id}/transactions/{transaction_id}")
+@router.delete("/accounts/{account_id}/transactions/{transaction_id}", tags=["Transactions"])
 def delete_transaction(account_id: UUID, transaction_id: UUID, db: Session = Depends(get_db)):
     transaction = db.query(models.Transaction).filter(
         models.Transaction.id == transaction_id,

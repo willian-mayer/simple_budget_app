@@ -1,11 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID
 
 class TransactionCreate(BaseModel):
-    title: str
-    amount: float
-    category: str
+    title: str = Field(..., example="Grosery Store")
+    amount: float = Field(..., example="-10")
+    category: str = Field(..., exmaple="Expenses")
 
 class Transaction(TransactionCreate):
     id: UUID
@@ -14,8 +14,8 @@ class Transaction(TransactionCreate):
         orm_mode = True
 
 class AccountCreate(BaseModel):
-    title: str
-    balance: float = 0.0
+    title: str = Field(..., example="Saving account")
+    balance: float = 0.0; Field(..., example="0.0")
 
 class Account(BaseModel):
     id: UUID
